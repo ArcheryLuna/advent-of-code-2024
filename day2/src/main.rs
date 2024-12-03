@@ -18,6 +18,23 @@ fn is_safe_report(report: &Vec<i32>) -> bool {
     all_increasing || all_decreasing
 }
 
+fn is_safe_with_dampener(report: &Vec<i32>) -> bool {
+    if is_safe_report(report) {
+        return true;
+    }
+
+    for i in 0..report.len() {
+        let mut modified_report = report.clone();
+        modified_report.remove(i);
+        if is_safe_report(&modified_report) {
+            return true;
+        }
+    }
+
+    false
+}
+
+
 fn main() -> io::Result<()> {
     // Read the entire input file into a string
     let contents = fs::read_to_string("src/input.txt")?;
@@ -32,9 +49,18 @@ fn main() -> io::Result<()> {
         .collect();
 
     // Count the number of safe reports
-    let safe_count = reports.iter().filter(|report| is_safe_report(report)).count();
+    let safe_count = reports
+        .iter()
+        .filter(|report| is_safe_report(report))
+        .count();
+
+    let dampened_safe_count = reports
+        .iter()
+        .filter(|report| is_safe_with_dampener(report))
+        .count();
 
     println!("Number of safe reports: {}", safe_count);
+    println!("Number of safe reports with dampener: {}", dampened_safe_count);
 
     Ok(())
 }
